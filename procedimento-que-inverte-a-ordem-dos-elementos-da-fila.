@@ -1,0 +1,162 @@
+#include<stdio.h>
+#include<stdlib.h>
+#define MAXTAM 10
+
+typedef int TChave;
+
+typedef int TApontador;
+
+typedef struct {
+	TChave Chave;
+} TItem;
+
+typedef struct {
+	TItem Item[MAXTAM];
+	TApontador Frente, Tras;
+} TFila;
+
+typedef struct {
+	TItem Item[MAXTAM];
+	TApontador Topo;
+} TPilha;
+
+void TFilaInicia(TFila *pFila);
+int TFilaEhVazia(TFila *pFila);
+int TFilaEnfileira(TFila *pFila, TItem x);
+int TFilaDesenfileira(TFila *pFila, TItem *pX);
+int TFilaTamanho(TFila *pFila);
+void TFilaImprime(TFila *pFila); //imprime os elementos
+
+void TPilhaInicia(TPilha *pPilha);
+int TPilhaEhVazia(TPilha *pPilha);
+int TPilhaTamanho(TPilha *pPilha);
+int TPilhaEmpilha(TPilha *pPilha, TItem x);
+int TPilhaDesempilha(TPilha *pPilha, TItem *pX);
+void TPilhaImprime(TPilha *pPilha);
+
+void TFilaInicia(TFila *pFila){
+	pFila->Frente = 0;
+	pFila->Tras = pFila->Frente;
+}
+
+int TFilaEhVazia(TFila *pFila){
+	return (pFila->Frente == pFila->Tras);
+}
+
+int TFilaTamanho(TFila *pFila){
+	return ((pFila->Tras >= pFila->Frente) ?
+			(pFila->Tras - pFila->Frente) :
+			(MAXTAM + pFila->Tras - pFila->Frente));
+}
+
+int TFilaEnfileira(TFila *pFila, TItem x){
+	if (pFila->Frente == (pFila->Tras + 1) % MAXTAM)
+		return 0; /* fila cheia */
+
+	pFila->Item[pFila->Tras] = x;
+	pFila->Tras = (pFila->Tras + 1) % MAXTAM;
+	return 1;
+}
+
+int TFilaDesenfileira(TFila *pFila, TItem *pX){
+	if (TFilaEhVazia(pFila))
+		return 0;
+
+	*pX = pFila->Item[pFila->Frente];
+	pFila->Frente = (pFila->Frente + 1) % MAXTAM;
+	return 1;
+}
+void TFilaImprime(TFila *pFila){
+	int i;
+	printf("\nFila:\n");
+	for(i=0;i<pFila->Tras;i=(i+1)%MAXTAM){
+		printf("%i\n", pFila->Item[i]);
+	}
+}
+
+void TPilhaInicia(TPilha *pPilha){
+	pPilha->Topo = 0;
+}
+
+int TPilhaEhVazia(TPilha *pPilha){
+return (pPilha->Topo == 0);
+}
+
+int TPilhaTamanho(TPilha *pPilha){
+return (pPilha->Topo);
+}
+
+int TPilhaEmpilha(TPilha *pPilha, TItem x){
+	if (pPilha->Topo == MAXTAM)
+		return 0;
+
+	pPilha->Item[pPilha->Topo] = x;
+	pPilha->Topo++;
+	return 1;
+}
+
+int TPilhaDesempilha(TPilha *pPilha, TItem *pX){
+	if (TPilhaEhVazia(pPilha))
+		return 0;
+
+	pPilha->Topo--;
+	*pX = pPilha->Item[pPilha->Topo];
+	return 1;
+}
+
+void TPilhaImprime(TPilha *pPilha){
+	int i;
+	printf("\nPilha:\n");
+
+	for(i=0;i<pPilha->Topo;i++){
+		printf("%d\n", pPilha->Item[i]);
+	}
+}
+
+int TFilainvertida(TFila *F, TPilha *P){
+	TItem aux;
+
+	if(TPilhaEhVazia(P)){
+		while (!TFilaEhVazia(F)){
+			TFilaDesenfileira(F, &aux);
+			TPilhaEmpilha(P, aux);
+		}
+		TFilaInicia(F);
+		while (!TPilhaEhVazia(P)){
+			TPilhaDesempilha(P, &aux);
+			TFilaEnfileira(F, aux);
+		}
+		return 0;
+	}
+	else{
+		printf("A Pilha contem elementos");
+		return 1;
+	}
+}
+
+int main(){
+
+
+	TItem x;
+	TFila F[MAXTAM];
+	TPilha P[MAXTAM];
+
+	TPilhaInicia(P);
+	TFilaInicia(F);
+	int i;
+
+
+	for (i=0; i<5; i++) {
+		x.Chave = (rand() % 100);
+		TFilaEnfileira(F, x);
+
+	}
+
+	TFilaImprime(F);
+
+	TFilainvertida(F, P);
+
+
+
+	return 0;
+}
